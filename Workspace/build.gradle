@@ -75,7 +75,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            setIdeaModule("1.16_workspace.workspace.main")
+            setIdeaModule("1.16_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
@@ -143,7 +143,7 @@ minecraft {
         server {
             workingDirectory project.file('run')
             properties 'mixin.env.disableRefMap': 'true'
-            setIdeaModule("1.16_workspace.workspace.main")
+            setIdeaModule("1.16_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
@@ -211,7 +211,7 @@ minecraft {
         data {
             workingDirectory project.file('run')
             properties 'mixin.env.disableRefMap': 'true'
-            setIdeaModule("1.16_workspace.workspace.main")
+            setIdeaModule("1.16_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 

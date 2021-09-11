@@ -18,4 +18,4 @@ rootProject.name = '1.16_workspace'
 //include 'ModXNet'
 include 'Animancy'
 
-include 'workspace'
+include 'Workspace'
