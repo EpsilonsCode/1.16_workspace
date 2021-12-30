@@ -1,21 +1,8 @@
 rootProject.name = '1.16_workspace'
-//include 'TheOneProbe'
-//include 'Ariente'
-//include 'ArienteWorld'
-//include 'DeepResonance'
-//include 'HoloGui'
-//include 'LostCities'
-//include 'McJtyLib'
-//include 'RFTools'
-//include 'RFToolsStorage'
-//include 'RFToolsBase'
-//include 'RFToolsControl'
-//include 'RFToolsDimensions'
-//include 'RFToolsPower'
-//include 'RFToolsUtility'
-//include 'RFToolsBuilder'
-//include 'Restrictions'
-//include 'ModXNet'
+
+
 include 'Animancy'
 
 include 'Workspace'
+
+
