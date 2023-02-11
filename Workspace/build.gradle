@@ -20,6 +20,7 @@ apply plugin: 'org.parchmentmc.librarian.forgegradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply from: 'https://raw.githubusercontent.com/SizableShrimp/Forge-Class-Remapper/main/classremapper.gradle'
 //apply plugin: "com.wynprice.cursemaven"
 repositories {
     maven {
@@ -48,7 +49,8 @@ version = '1.0'
 group = 'com.yourname.modid' // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'modid'
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+//sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
 
 minecraft {
     // The mappings can be changed at any time, and must be in the following format.
@@ -57,6 +59,7 @@ minecraft {
     // Use non-default mappings at your own risk. they may not always work.
     // Simply re-run your setup task after changing the mappings to update your workspace.
     mappings  channel: mappings_channel, version: mappings_date + '-' + minecraft_version
+    //mappings channel: 'official', version: '1.17.1'
     // makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
 
     // accessTransformer = file('build/resources/main/META-INF/accesstransformer.cfg')
@@ -68,7 +71,7 @@ minecraft {
             workingDirectory project.file('run')
             property 'mixin.env.remapRefMap', 'true'
             property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-            setIdeaModule("1.16_workspace.Workspace.main")
+            setIdeaModule("Main_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
@@ -136,7 +139,7 @@ minecraft {
         server {
             workingDirectory project.file('run')
             properties 'mixin.env.disableRefMap': 'true'
-            setIdeaModule("1.16_workspace.Workspace.main")
+            setIdeaModule("Main_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
@@ -204,13 +207,13 @@ minecraft {
         data {
             workingDirectory project.file('run')
             properties 'mixin.env.disableRefMap': 'true'
-            setIdeaModule("1.16_workspace.Workspace.main")
+            setIdeaModule("Main_workspace.Workspace.main")
             // Recommended logging data for a userdev environment
             // property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
 
             // Recommended logging level for the console
             // property 'forge.logging.console.level', 'debug'
-            args '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
+            args '--mod', 'examplemod', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
 
             mods {
 
@@ -272,14 +275,79 @@ minecraft {
     }
 }
 
+task updateForgeVersion {
+    group 'custom'
+    doFirst {
+        URL url = new URL("https://files.minecraftforge.net/net/minecraftforge/forge/index_" + minecraft_version + ".html");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = reader.readLine()) != null) {
+            response.append(inputLine);
+        }
+        reader.close();
+        def var = new Properties()
+        def value = response.toString().indexOf("Download Latest")
+        def printer = response.toString().substring(value, value + 150)
+        value = printer.indexOf(minecraft_version)
+        def endVaule = printer.indexOf("</small>")
+        printer = printer.substring(value, endVaule).replace(minecraft_version + " - ", "")
+        // print result
+        // System.out.println(printer);
+        File myfile = file("gradle.properties");
+
+        var.load(myfile.newDataInputStream())
+        var.setProperty("forge_version", printer)
+        var.store(myfile.newWriter(), null)
+
+    }
+}
+
+task updateParchmentVersion {
+    group 'custom'
+    doFirst {
+        URL url = new URL("https://github.com/ParchmentMC/Parchment/tags");
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("GET");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(con.getInputStream()))
+        String inputLine;
+        StringBuffer response = new StringBuffer();
+
+        while ((inputLine = reader.readLine()) != null) {
+            response.append(inputLine);
+        }
+        reader.close();
+        def var = new Properties()
+        def value = response.toString().indexOf(minecraft_version)
+        def printer = response.toString().substring(value, value + 30)
+        value = printer.indexOf(minecraft_version)
+
+        def endVaule = printer.indexOf("\" data")
+        printer = printer.substring(value, endVaule).replace(minecraft_version + "-", "")
+        // print result
+        // System.out.println(printer);
+        File myfile = file("gradle.properties");
+        System.out.println(printer)
+        var.load(myfile.newDataInputStream())
+        var.setProperty("mappings_date", printer)
+        var.store(myfile.newWriter(), null)
+
+    }
+}
+
 dependencies {
     // Specify the version of Minecraft to use, If this is any group other then 'net.minecraft' it is assumed
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
+
+    //minecraft 'net.minecraftforge:forge:1.17.1-37.0.15'
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
 
-    compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
-    runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
+    //compileOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}:api")
+    //runtimeOnly fg.deobf("mezz.jei:jei-${minecraft_version}:${jei_version}")
     //implementation fg.deobf("vazkii.patchouli:Patchouli:${patchouli_version}") {
     //    transitive = false
     //}
